@@ -5,6 +5,7 @@ import {
   useEffect,
   useState,
 } from 'react';
+import {CloseIcon} from '~/assets/icons';
 
 type AsideType = 'search' | 'cart' | 'mobile' | 'closed';
 type AsideContextValue = {
@@ -55,15 +56,21 @@ export function Aside({
   return (
     <div
       aria-modal
-      className={`overlay ${expanded ? 'expanded' : ''}`}
+      className={`transition duration-200 overlay ${
+        expanded ? 'expanded' : ''
+      }`}
       role="dialog"
     >
       <button className="close-outside" onClick={close} />
       <aside>
-        <header>
-          <h3>{heading}</h3>
-          <button className="close reset" onClick={close}>
-            &times;
+        <header className="border-[#000000]/10 px-[30px] pt-[26px] pb-[24px]">
+          <div className="flex flex-row items-center justify-start gap-3">
+            <span className="font-['Rubik'] font-medium text-[34px] leading-[40.29px] text-[#1B1F23]">
+              {heading}
+            </span>
+          </div>
+          <button className="flex" onClick={close}>
+            <CloseIcon className="w-[15px] h-[15px]" />
           </button>
         </header>
         <main>{children}</main>

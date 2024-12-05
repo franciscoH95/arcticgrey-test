@@ -2,7 +2,7 @@ import type {CartApiQueryFragment} from 'storefrontapi.generated';
 import type {CartLayout} from '~/components/CartMain';
 import {CartForm, Money, type OptimisticCart} from '@shopify/hydrogen';
 import {useRef} from 'react';
-import {FetcherWithComponents} from '@remix-run/react';
+import type {FetcherWithComponents} from '@remix-run/react';
 
 type CartSummaryProps = {
   cart: OptimisticCart<CartApiQueryFragment | null>;
@@ -11,23 +11,31 @@ type CartSummaryProps = {
 
 export function CartSummary({cart, layout}: CartSummaryProps) {
   const className =
-    layout === 'page' ? 'cart-summary-page' : 'cart-summary-aside';
+    layout === 'page'
+      ? 'cart-summary-page'
+      : 'flex flex-col border-solid border-t-2 border-black/10 px-[30px] py-[34px] gap-7';
 
   return (
     <div aria-labelledby="cart-summary" className={className}>
-      <h4>Totals</h4>
-      <dl className="cart-subtotal">
-        <dt>Subtotal</dt>
-        <dd>
+      <div className="flex flex-row justify-between items-center">
+        <div className="flex flex-col gap-[14px]">
+          <span className="font-['Rubik'] font-medium text-[20px] leading-[23.7px] text-[#1B1F23] select-none">
+            <strong>Subtotal</strong>
+          </span>
+          <span className="font-['Rubik'] font-normal text-[14px] leading-[16.59px] text-[#1B1F23]/60 select-none">
+            Tax included. Shipping calculated at checkout.
+          </span>
+        </div>
+        <span className="font-['Rubik'] font-semibold text-[24px] leading-[28.44px] text-[#1B1F23] select-none">
           {cart.cost?.subtotalAmount?.amount ? (
             <Money data={cart.cost?.subtotalAmount} />
           ) : (
             '-'
           )}
-        </dd>
-      </dl>
-      <CartDiscounts discountCodes={cart.discountCodes} />
-      <CartGiftCard giftCardCodes={cart.appliedGiftCards} />
+        </span>
+      </div>
+      {/* <CartDiscounts discountCodes={cart.discountCodes} />
+      <CartGiftCard giftCardCodes={cart.appliedGiftCards} /> */}
       <CartCheckoutActions checkoutUrl={cart.checkoutUrl} />
     </div>
   );
@@ -36,12 +44,15 @@ function CartCheckoutActions({checkoutUrl}: {checkoutUrl?: string}) {
   if (!checkoutUrl) return null;
 
   return (
-    <div>
-      <a href={checkoutUrl} target="_self">
-        <p>Continue to Checkout &rarr;</p>
-      </a>
-      <br />
-    </div>
+    <a
+      href={checkoutUrl}
+      target="_self"
+      className="flex w-full bg-[#1B1F23] px-[10px] py-6 justify-center rounded-xl"
+    >
+      <span className="font-['Rubik'] font-semibold text-[18px] leading-[21.33px] text-white">
+        Checkout
+      </span>
+    </a>
   );
 }
 

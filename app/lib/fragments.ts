@@ -245,6 +245,43 @@ export const FOOTER_QUERY = `#graphql
   ${MENU_FRAGMENT}
 ` as const;
 
+const PRODUCT_VARIANT_FRAGMENT = `#graphql
+  fragment ProductVariant on ProductVariant {
+    availableForSale
+    compareAtPrice {
+      amount
+      currencyCode
+    }
+    id
+    image {
+      __typename
+      id
+      url
+      altText
+      width
+      height
+    }
+    price {
+      amount
+      currencyCode
+    }
+    product {
+      title
+      handle
+    }
+    selectedOptions {
+      name
+      value
+    }
+    sku
+    title
+    unitPrice {
+      amount
+      currencyCode
+    }
+  }
+` as const;
+
 const PRODUCT_FRAGMENT = `#graphql
   fragment ProductDetails on Product {
     id
@@ -259,6 +296,13 @@ const PRODUCT_FRAGMENT = `#graphql
         }
       }
     }
+    featuredImage {
+      id
+      altText
+      url
+      width
+      height
+    }
     priceRange {
       minVariantPrice {
         amount
@@ -270,7 +314,14 @@ const PRODUCT_FRAGMENT = `#graphql
       id
       name
     }
+    availableForSale
+    variants(first: 1) {
+      nodes {
+        ...ProductVariant
+      }
+    }
   }
+  ${PRODUCT_VARIANT_FRAGMENT}
 ` as const;
 
 const COLLECTION_FRAGMENT = `#graphql

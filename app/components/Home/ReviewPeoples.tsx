@@ -17,7 +17,7 @@ function Review({
   itemIndex: number;
 }) {
   return (
-    <div className="flex flex-col w-[300px] gap-4">
+    <div className="flex flex-col w-[300px] gap-4 snap-center">
       <video
         autoPlay
         muted
@@ -25,7 +25,7 @@ function Review({
         playsInline
         className={`${
           currentIndex === itemIndex ? 'h-[500px]' : 'h-[420px]'
-        } w-[300px] object-cover rounded-lg`}
+        } w-[300px] object-cover rounded-lg transition-all duration-300 ease-linear`}
       >
         <source src={video.url} type="video/mp4" />
       </video>
@@ -139,7 +139,7 @@ function ReviewPeople() {
         <div className="relative w-full">
           <div className="flex right-10 overflow-hidden">
             <div
-              className="flex transition-transform duration-500 gap-5 items-center px-5"
+              className="flex transition-transform duration-500 gap-5 items-center px-5 snap-x"
               style={{
                 transform: `translateX(-${
                   currentIndex === 0 || currentIndex === 1

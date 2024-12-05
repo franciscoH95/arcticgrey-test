@@ -14,7 +14,7 @@ import {
 import resetStyles from '~/styles/reset.css?url';
 import appStyles from '~/styles/app.css?url';
 import {PageLayout} from '~/components/PageLayout';
-import {FOOTER_QUERY, HEADER_QUERY} from '~/lib/fragments';
+import {COLLECTION_QUERY, FOOTER_QUERY, HEADER_QUERY} from '~/lib/fragments';
 
 export type RootLoader = typeof loader;
 
@@ -97,7 +97,19 @@ async function loadCriticalData({context}: LoaderFunctionArgs) {
     // Add other queries here, so that they are loaded in parallel
   ]);
 
-  return {header};
+  const collections = await storefront
+    .query(COLLECTION_QUERY, {
+      cache: storefront.CacheLong(),
+      variables: {
+        firstCollection: 10,
+      },
+    })
+    .catch((error) => {
+      console.error(error);
+      return null;
+    });
+
+  return {header, collections};
 }
 
 /**
@@ -143,7 +155,7 @@ export function Layout({children}: {children?: React.ReactNode}) {
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className="w-screen h-screen">
         {data ? (
           <Analytics.Provider
             cart={data.cart}

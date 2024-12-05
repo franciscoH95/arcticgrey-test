@@ -5,8 +5,11 @@ import type {
 } from '@shopify/hydrogen/storefront-api-types';
 import {Suspense} from 'react';
 import {BlackStarIcon, LeftArrowIcon, RightArrowIcon} from '~/assets/icons';
+import {AddToCartButton} from '../AddToCartButton';
+import {useAside} from '~/components/Aside';
 
 function Product({product}: {product: ProductType}) {
+  const {open} = useAside();
   return (
     <div className="flex flex-col h-auto relative bg-white rounded-lg group">
       <img
@@ -90,9 +93,30 @@ function Product({product}: {product: ProductType}) {
               </div>
             </div>
             <button className="flex w-full rounded-lg gap-[10px] bg-[#1B1F23] items-center justify-center py-[14px]">
-              <span className="font-['Rubik'] font-medium text-sm leading-[15.59px] text-white">
-                Add to Cart - ${product.priceRange.minVariantPrice.amount}
-              </span>
+              <AddToCartButton
+                disabled={!product || !product.availableForSale}
+                onClick={() => {
+                  open('cart');
+                }}
+                lines={
+                  product
+                    ? [
+                        {
+                          merchandiseId: product.variants.nodes[0].id,
+                          quantity: 1,
+                          product,
+                        },
+                      ]
+                    : []
+                }
+              >
+                <span className="font-['Rubik'] font-medium text-sm leading-[15.59px] text-white">
+                  {product?.availableForSale
+                    ? 'Add to Cart - ' +
+                      product.priceRange.minVariantPrice.amount
+                    : 'Sold out'}
+                </span>
+              </AddToCartButton>
             </button>
           </div>
           <span className="font-['Rubik'] w-full font-normal text-xs leading-[14.22px] text-[#1B1F23] text-center opacity-0 group-hover:opacity-100 transition ease-in-out duration-500">
@@ -163,3 +187,108 @@ function RecommendedProducts({
 }
 
 export default RecommendedProducts;
+
+const PRODUCT_VARIANT_FRAGMENT = `#graphql
+  fragment ProductVariant on ProductVariant {
+    availableForSale
+    compareAtPrice {
+      amount
+      currencyCode
+    }
+    id
+    image {
+      __typename
+      id
+      url
+      altText
+      width
+      height
+    }
+    price {
+      amount
+      currencyCode
+    }
+    product {
+      title
+      handle
+    }
+    selectedOptions {
+      name
+      value
+    }
+    sku
+    title
+    unitPrice {
+      amount
+      currencyCode
+    }
+  }
+` as const;
+
+const PRODUCT_FRAGMENT = `#graphql
+  fragment Product on Product {
+    id
+    title
+    vendor
+    handle
+    descriptionHtml
+    description
+    options {
+      name
+      optionValues {
+        name
+      }
+    }
+    selectedVariant: variantBySelectedOptions(selectedOptions: $selectedOptions, ignoreUnknownOptions: true, caseInsensitiveMatch: true) {
+      ...ProductVariant
+    }
+    variants(first: 1) {
+      nodes {
+        ...ProductVariant
+      }
+    }
+    seo {
+      description
+      title
+    }
+  }
+  ${PRODUCT_VARIANT_FRAGMENT}
+` as const;
+
+const PRODUCT_QUERY = `#graphql
+  query Product(
+    $country: CountryCode
+    $handle: String!
+    $language: LanguageCode
+    $selectedOptions: [SelectedOptionInput!]!
+  ) @inContext(country: $country, language: $language) {
+    product(handle: $handle) {
+      ...Product
+    }
+  }
+  ${PRODUCT_FRAGMENT}
+` as const;
+
+const PRODUCT_VARIANTS_FRAGMENT = `#graphql
+  fragment ProductVariants on Product {
+    variants(first: 250) {
+      nodes {
+        ...ProductVariant
+      }
+    }
+  }
+  ${PRODUCT_VARIANT_FRAGMENT}
+` as const;
+
+const VARIANTS_QUERY = `#graphql
+  ${PRODUCT_VARIANTS_FRAGMENT}
+  query ProductVariants(
+    $country: CountryCode
+    $language: LanguageCode
+    $handle: String!
+  ) @inContext(country: $country, language: $language) {
+    product(handle: $handle) {
+      ...ProductVariants
+    }
+  }
+` as const;

@@ -16,8 +16,9 @@
   "dependencies": {
     "@remix-run/react": "^2.13.1",
     "@remix-run/server-runtime": "^2.13.1",
-    "@shopify/hydrogen": "2024.10.0",
+    "@shopify/hydrogen": "^2024.10.0",
     "@shopify/remix-oxygen": "^2.0.9",
+    "@vercel/node": "^3.2.28",
     "graphql": "^16.6.0",
     "graphql-tag": "^2.12.6",
     "isbot": "^3.8.0",

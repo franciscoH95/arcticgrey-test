@@ -32,7 +32,22 @@ export function Header({
 }: HeaderProps) {
   const {shop, menu} = header;
   return (
-    <header className="flex flex-row bg-white top-5 px-6 py-5 ml-10 mr-10 sticky z-10 rounded-lg h-16 items-center justify-between">
+    <header
+      className="flex 
+                flex-row
+                bg-white 
+                top-5 
+                px-4 sm:px-6 lg:px-10 
+                py-3 
+                mx-4 sm:mx-6 lg:mx-10 
+                z-10 
+                sticky 
+                rounded-lg 
+                h-16 
+                items-center 
+                justify-between 
+                shadow-md"
+    >
       <NavLink prefetch="intent" to="/" style={activeLinkStyle} end>
         <strong>{shop.name}</strong>
       </NavLink>
@@ -58,49 +73,55 @@ export function HeaderMenu({
   viewport: Viewport;
   publicStoreDomain: HeaderProps['publicStoreDomain'];
 }) {
-  const className = `header-menu-${viewport}`;
+  const className = `header-menu-${viewport} items-center ml-[20%]`;
   const {close} = useAside();
 
   return (
-    <nav className={className} role="navigation">
-      <SearchToggle />
-      {viewport === 'mobile' && (
-        <NavLink
-          end
-          onClick={close}
-          prefetch="intent"
-          style={activeLinkStyle}
-          to="/"
-        >
-          Home
-        </NavLink>
-      )}
-      {(menu || FALLBACK_HEADER_MENU).items.map((item) => {
-        if (!item.url) return null;
-
-        // if the url is internal, we strip the domain
-        const url =
-          item.url.includes('myshopify.com') ||
-          item.url.includes(publicStoreDomain) ||
-          item.url.includes(primaryDomainUrl)
-            ? new URL(item.url).pathname
-            : item.url;
-        return (
+    <div className="flex flex-row gap-14 w-full justify-evenly">
+      <nav className={className} role="navigation">
+        <SearchToggle />
+        {viewport === 'mobile' && (
           <NavLink
-            className="relative font-['Rubik'] font-normal text-[14px] leading-[16.59px] text-black cursor-pointer no-underline group"
             end
-            key={item.id}
             onClick={close}
             prefetch="intent"
             style={activeLinkStyle}
-            to={url}
+            to="/"
           >
-            {item.title}
-            <span className="absolute left-0 bottom-[-10px] w-full h-[1px] bg-black transition-all duration-500 ease-in-out opacity-0 group-hover:opacity-100"></span>
+            Home
           </NavLink>
-        );
-      })}
-    </nav>
+        )}
+        {(menu || FALLBACK_HEADER_MENU).items.map((item) => {
+          if (!item.url) return null;
+
+          // if the url is internal, we strip the domain
+          const url =
+            item.url.includes('myshopify.com') ||
+            item.url.includes(publicStoreDomain) ||
+            item.url.includes(primaryDomainUrl)
+              ? new URL(item.url).pathname
+              : item.url;
+          return (
+            <NavLink
+              className="relative font-['Rubik'] font-normal text-[14px] leading-[16.59px] text-black cursor-pointer no-underline group"
+              end
+              key={item.id}
+              onClick={close}
+              prefetch="intent"
+              style={activeLinkStyle}
+              to={url}
+            >
+              {item.title}
+              <span className="absolute left-0 bottom-[-10px] w-full h-[1px] bg-black transition-all duration-500 ease-in-out opacity-0 group-hover:opacity-100"></span>
+            </NavLink>
+          );
+        })}
+      </nav>
+      <div className="flex flex-row gap-8">
+        <GenreToggle />
+        <QuizBtn />
+      </div>
+    </div>
   );
 }
 
@@ -111,8 +132,6 @@ function HeaderCtas({
   return (
     <nav className="header-ctas" role="navigation">
       <HeaderMenuMobileToggle />
-      <GenreToggle />
-      <QuizBtn />
       <NavLink prefetch="intent" to="/account" style={activeLinkStyle}>
         <Suspense fallback="Sign in">
           <Await resolve={isLoggedIn} errorElement={<UserIcon />}>

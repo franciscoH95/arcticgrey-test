@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  --aside-width: 400px;
+  --aside-width: 580px;
   --cart-aside-summary-height-with-discount: 300px;
   --cart-aside-summary-height: 250px;
   --grid-item-width: 355px;
@@ -35,11 +35,10 @@ aside {
 
 aside header {
   align-items: center;
-  border-bottom: 1px solid var(--color-dark);
+  border-bottom: 1px solid;
   display: flex;
   height: var(--header-height);
   justify-content: space-between;
-  padding: 0 20px;
 }
 
 aside header h3 {
@@ -61,10 +60,6 @@ aside header .close:hover {
 aside header h2 {
   margin-bottom: 0.6rem;
   margin-top: 0;
-}
-
-aside main {
-  margin: 1rem;
 }
 
 aside p {
@@ -91,7 +86,7 @@ aside li {
   transition: opacity 400ms ease-in-out;
   transition: opacity 400ms;
   visibility: hidden;
-  z-index: 10;
+  z-index: 20;
 }
 
 .overlay .close-outside {
@@ -157,7 +152,7 @@ button.reset:hover:not(:has(> *)) {
   display: flex;
   height: var(--header-height);
   padding: 0 1rem;
-  position: sticky;
+  position: fixed;
   top: 0;
   z-index: 1;
 }
@@ -180,7 +175,6 @@ button.reset:hover:not(:has(> *)) {
   @media (min-width: 45em) {
     display: flex;
     grid-gap: 2.5rem;
-    margin-left: auto;
   }
 }
 
@@ -427,7 +421,6 @@ button.reset:hover:not(:has(> *)) {
 
 .product-price-on-sale {
   display: flex;
-  grid-gap: 0.5rem;
 }
 
 .product-price-on-sale s {

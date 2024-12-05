@@ -6,6 +6,7 @@ import {Link} from '@remix-run/react';
 import {ProductPrice} from './ProductPrice';
 import {useAside} from './Aside';
 import type {CartApiQueryFragment} from 'storefrontapi.generated';
+import {CircleArrowIcon} from '~/assets/icons';
 
 type CartLine = OptimisticCartLine<CartApiQueryFragment>;
 
@@ -26,45 +27,55 @@ export function CartLineItem({
   const {close} = useAside();
 
   return (
-    <li key={id} className="cart-line">
+    <div key={id} className="flex flex-row rounded-lg p-4 gap-4 bg-white">
       {image && (
         <Image
           alt={title}
           aspectRatio="1/1"
           data={image}
-          height={100}
+          height={90}
           loading="lazy"
-          width={100}
+          width={90}
         />
       )}
 
-      <div>
-        <Link
-          prefetch="intent"
-          to={lineItemUrl}
-          onClick={() => {
-            if (layout === 'aside') {
-              close();
-            }
-          }}
-        >
-          <p>
-            <strong>{product.title}</strong>
-          </p>
-        </Link>
-        <ProductPrice price={line?.cost?.totalAmount} />
-        <ul>
-          {selectedOptions.map((option) => (
-            <li key={option.name}>
-              <small>
-                {option.name}: {option.value}
-              </small>
-            </li>
-          ))}
-        </ul>
-        <CartLineQuantity line={line} />
+      <div className="flex flex-col gap-3 justify-center w-full">
+        <div className="flex flex-row justify-between items-center">
+          <Link
+            prefetch="intent"
+            to={lineItemUrl}
+            onClick={() => {
+              if (layout === 'aside') {
+                close();
+              }
+            }}
+          >
+            <span className="font-['Rubik'] font-semibold text-[14px] leading-[19px] text-[#1B1F23] text-balance break-words">
+              {product.title}
+            </span>
+          </Link>
+          <ProductPrice price={line?.cost?.totalAmount} />
+        </div>
+        <div className="flex flex-row justify-between items-end">
+          {/* <ul>
+            {selectedOptions.map((option) => (
+              <li key={option.name}>
+                <small>
+                  {option.name}: {option.value}
+                </small>
+              </li>
+            ))}
+          </ul> */}
+          <CartLineQuantity line={line} />
+          <div className="flex flex-row gap-2 px-4 py-[10px] border border-dashed border-black/20 rounded-[6px] select-none">
+            <CircleArrowIcon />
+            <span className="font-['Rubik'] font-normal text-[12px] leading-[14.22px] text-[#1B1F23]/70">
+              Subscribe & Save 10%
+            </span>
+          </div>
+        </div>
       </div>
-    </li>
+    </div>
   );
 }
 
@@ -80,31 +91,44 @@ function CartLineQuantity({line}: {line: CartLine}) {
   const nextQuantity = Number((quantity + 1).toFixed(0));
 
   return (
-    <div className="cart-line-quantity">
-      <small>Quantity: {quantity} &nbsp;&nbsp;</small>
-      <CartLineUpdateButton lines={[{id: lineId, quantity: prevQuantity}]}>
-        <button
-          aria-label="Decrease quantity"
-          disabled={quantity <= 1 || !!isOptimistic}
-          name="decrease-quantity"
-          value={prevQuantity}
-        >
-          <span>&#8722; </span>
-        </button>
-      </CartLineUpdateButton>
-      &nbsp;
+    <div className="flex flex-row gap-[18px] border border-black/20 rounded-[6px] px-3 py-[10px]">
+      <div className={`${quantity <= 1 ? 'hidden' : 'block'}`}>
+        <CartLineUpdateButton lines={[{id: lineId, quantity: prevQuantity}]}>
+          <button
+            aria-label="Decrease quantity"
+            disabled={quantity <= 1 || !!isOptimistic}
+            name="decrease-quantity"
+            value={prevQuantity}
+            className="flex items-center w-[10px] h-[10px]"
+            title="Less"
+          >
+            <span className="text-[#1B1F23]/70">&#8722; </span>
+          </button>
+        </CartLineUpdateButton>
+      </div>
+      <div className={`${quantity > 1 ? 'hidden' : 'block'}`}>
+        <CartLineRemoveButton
+          lineIds={[lineId]}
+          disabled={quantity > 1 || !!isOptimistic}
+        />
+      </div>
+      <div className="flex items-center">
+        <span className="font-['Rubik'] font-normal text-[12px] leading-[14.22px] text-[#1B1F23]/70">
+          {quantity}
+        </span>
+      </div>
       <CartLineUpdateButton lines={[{id: lineId, quantity: nextQuantity}]}>
         <button
           aria-label="Increase quantity"
           name="increase-quantity"
           value={nextQuantity}
           disabled={!!isOptimistic}
+          className="flex items-center w-[10px] h-[10px]"
+          title="Add"
         >
-          <span>&#43;</span>
+          <span className="text-[#1B1F23]/70">&#43;</span>
         </button>
       </CartLineUpdateButton>
-      &nbsp;
-      <CartLineRemoveButton lineIds={[lineId]} disabled={!!isOptimistic} />
     </div>
   );
 }
@@ -127,8 +151,15 @@ function CartLineRemoveButton({
       action={CartForm.ACTIONS.LinesRemove}
       inputs={{lineIds}}
     >
-      <button disabled={disabled} type="submit">
-        Remove
+      <button
+        disabled={disabled}
+        type="submit"
+        className={`${
+          disabled ? 'hidden' : 'block'
+        } flex items-center w-[10px] h-[10px]`}
+        title="Remove"
+      >
+        <span className="text-[#1B1F23]/70">&#8722;</span>
       </button>
     </CartForm>
   );
